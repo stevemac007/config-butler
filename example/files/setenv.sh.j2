@@ -1,0 +1,3 @@
+export JAVA_OPTS="-Xmx {{ jvm_memory }}M"
+{% if appd_enabled %}export JAVA_OPTS="${JAVA_OPTS} -javaagent:/opt/appd/appd.jar"{% else %}
+# AppD agent disabled{% endif %}

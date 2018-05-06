@@ -1,0 +1,40 @@
+---
+format: 1.0
+properties:
+
+    HOST_NAME: host|hostname
+    HOST_MEMORY: host|total_memory
+#    ENVIRONMENT: aws|tags|aws:cloudformation:stack-name
+    ENVIRONMENT: string|test
+
+    scope: string|${ENVIRONMENT}-application
+    application: string|garden
+    application_tier: string|webserver
+
+    splunk_password: aws|paramstore|/SS/Splunk/SplunkAdminPassword
+
+    application_name: string|sample-app
+
+    appd_enabled: aws|paramstore|/${application}/${ENVIRONMENT}/AppD/enabled
+    controller_licence: aws|paramstore|/${application}/${ENVIRONMENT}/AppD/account-access-key
+    controller_host: aws|paramstore|/${application}/${ENVIRONMENT}/AppD/controller
+    controller_url: string|/
+    controller_port: string|1234
+    use_ssl: string|true
+
+    sub_memory: math|multiply|${HOST_MEMORY}|0.8
+    jvm_memory: math|divide|${sub_memory}|1024
+
+files:
+    -
+      mode: jinja2
+      src: files/appdynamics.conf.j2
+      dest: ./output/appdynamics.conf
+
+    - mode: jinja2
+      src: files/setenv.sh.j2
+      dest: ./output/setenv.sh
+
+    - mode: jinja2
+      src: files/${ENVIRONMENT}/application.conf.j2
+      dest: ./output/application.conf
