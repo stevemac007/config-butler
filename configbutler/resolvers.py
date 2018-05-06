@@ -38,8 +38,8 @@ class StringResolver(BaseResolver):
 
 class AWSInstanceMetadataResolver(BaseResolver):
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self):
+        super(AWSInstanceMetadataResolver, self).__init__()
         self.metadata = EC2Metadata()
 
     def resolve(self, parts, current_properties):
@@ -88,8 +88,8 @@ class AWSTagResolver(BaseResolver):
 
 class AWSParamStoreResolver(BaseResolver):
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self):
+        super(AWSParamStoreResolver, self).__init__()
         self.client = boto3.client('ssm')
 
     def resolve(self, key, current_properties):
@@ -107,9 +107,8 @@ class AWSParamStoreResolver(BaseResolver):
 
 class LocalHostResolver(BaseResolver):
 
-    def __init__(self) -> None:
-        super().__init__()
-
+    def __init__(self):
+        super(LocalHostResolver, self).__init__()
         self.mem = virtual_memory()
 
     def resolve(self, key, current_properties):
