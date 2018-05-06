@@ -139,7 +139,7 @@ properties:
 
 A set of properties that are resolved from AWS scoped services
 
-#### instance
+#### metadata
 
 * `account_id`
 * `ami_id`

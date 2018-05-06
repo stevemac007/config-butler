@@ -36,7 +36,7 @@ class StringResolver(BaseResolver):
         return self.resolve_embedded(parts[0], current_properties)
 
 
-class AWSInstanceResolver(BaseResolver):
+class AWSInstanceMetadataResolver(BaseResolver):
 
     def resolve(self, parts, current_properties):
 
@@ -119,8 +119,8 @@ class AWSResolver(BaseSubResolver):
             return AWSTagResolver()
         elif resolver_name == "paramstore":
             return AWSParamStoreResolver()
-        elif resolver_name == "instance":
-            return AWSInstanceResolver()
+        elif resolver_name == "metadata":
+            return AWSInstanceMetadataResolver()
         else:
             logger.error("Unable to locate AWS sub-resolver '{}'".format(resolver_name))
 
