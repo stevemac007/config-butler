@@ -38,7 +38,9 @@ class StringResolver(BaseResolver):
 
 class AWSInstanceMetadataResolver(BaseResolver):
 
-    metadata = EC2Metadata()
+    def __init__(self) -> None:
+        super().__init__()
+        self.metadata = EC2Metadata()
 
     def resolve(self, parts, current_properties):
 
@@ -86,7 +88,9 @@ class AWSTagResolver(BaseResolver):
 
 class AWSParamStoreResolver(BaseResolver):
 
-    client = boto3.client('ssm')
+    def __init__(self) -> None:
+        super().__init__()
+        self.client = boto3.client('ssm')
 
     def resolve(self, key, current_properties):
 
@@ -103,7 +107,10 @@ class AWSParamStoreResolver(BaseResolver):
 
 class LocalHostResolver(BaseResolver):
 
-    mem = virtual_memory()
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.mem = virtual_memory()
 
     def resolve(self, key, current_properties):
         if key[0] == "hostname":
