@@ -83,7 +83,7 @@ class AWSInstanceMetadataResolver(BaseResolver):
 class AWSTagResolver(BaseResolver):
 
     def resolve(self, key, current_properties):
-        return "tag:"+self.resolve_embedded(key, current_properties)
+        return "tag:" + self.resolve_embedded(key, current_properties)
 
 
 class AWSParamStoreResolver(BaseResolver):
