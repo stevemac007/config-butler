@@ -2,5 +2,8 @@ venv
 .idea
 dist
 output
-configbutler/__pycache__/
-configbutler.egg-info/
+__pycache__
+*.egg-info/
+.eggs
+.coverage
+*.pyc

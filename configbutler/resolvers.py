@@ -6,8 +6,8 @@ import boto3
 from string import Template
 from botocore.exceptions import ClientError
 from psutil import virtual_memory
-from ec2_metadata import ec2_metadata
-
+from ec2_metadata import EC2Metadata
+import multiprocessing
 
 logger = logging.getLogger("configioc")
 
@@ -38,42 +38,44 @@ class StringResolver(BaseResolver):
 
 class AWSInstanceMetadataResolver(BaseResolver):
 
+    metadata = EC2Metadata()
+
     def resolve(self, parts, current_properties):
 
         if parts[0] == "account_id":
-            return ec2_metadata.account_id
+            return self.metadata.account_id
         elif parts[0] == "ami_id":
-            return ec2_metadata.ami_id
+            return self.metadata.ami_id
         elif parts[0] == "ami_launch_index":
-            return ec2_metadata.ami_launch_index
+            return self.metadata.ami_launch_index
         elif parts[0] == "availability_zone":
-            return ec2_metadata.availability_zone
+            return self.metadata.availability_zone
         elif parts[0] == "iam_info":
-            return ec2_metadata.iam_info
+            return self.metadata.iam_info
         elif parts[0] == "instance_action":
-            return ec2_metadata.instance_action
+            return self.metadata.instance_action
         elif parts[0] == "instance_id":
-            return ec2_metadata.instance_id
+            return self.metadata.instance_id
         elif parts[0] == "instance_profile_arn":
-            return ec2_metadata.instance_profile_arn
+            return self.metadata.instance_profile_arn
         elif parts[0] == "instance_profile_id":
-            return ec2_metadata.instance_profile_id
+            return self.metadata.instance_profile_id
         elif parts[0] == "instance_type":
-            return ec2_metadata.instance_type
+            return self.metadata.instance_type
         elif parts[0] == "private_hostname":
-            return ec2_metadata.private_hostname
+            return self.metadata.private_hostname
         elif parts[0] == "private_ipv4":
-            return ec2_metadata.private_ipv4
+            return self.metadata.private_ipv4
         elif parts[0] == "public_hostname":
-            return ec2_metadata.public_hostname
+            return self.metadata.public_hostname
         elif parts[0] == "public_ipv4":
-            return ec2_metadata.public_ipv4
+            return self.metadata.public_ipv4
         elif parts[0] == "security_groups":
-            return ec2_metadata.security_groups
+            return self.metadata.security_groups
         elif parts[0] == "region":
-            return ec2_metadata.region
+            return self.metadata.region
         else:
-            logger.error("Unable to AWS instance attribute '{}'".format(parts[0]))
+            logger.error("Unable to resolve AWS instance attribute '{}'".format(parts[0]))
 
 
 class AWSTagResolver(BaseResolver):
@@ -108,6 +110,8 @@ class LocalHostResolver(BaseResolver):
             return socket.gethostname()
         elif key[0] == "total_memory":
             return self.mem.total
+        elif key[0] == "cpu_count":
+            return multiprocessing.cpu_count()
         else:
             logger.error("Unable to resolve host function '{}'".format(key[0]))
 
