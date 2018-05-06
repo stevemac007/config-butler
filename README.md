@@ -98,11 +98,27 @@ export JAVA_OPTS="${JAVA_OPTS} -javaagent:/opt/appd/appd.jar"
 
 ### Math functions
 
-+ - / * functions that can be used to t
+Functions that can be used to to manipulate figures to perform basic calculations
+
+* `add` - adds two parameters together (eg. math|add|1|${CLUSTER_SIZE})
+* `subtract` - subtracts the second from the first parameter (eg. math|subtract|15|${CLUSTER_SIZE}
+* `multiply` - multiplys the parameters together (eg. math|multiply|${TOTAL_MEMORY}|0.8
+* `divide` - divides the first by the second parameter (eg. math|divide|${TOTAL_MEMORY}|1024
+
+```
+properties:
+    HOST_MEMORY: host|total_memory
+    sub_memory: math|multiply|${HOST_MEMORY}|0.8
+    jvm_memory: math|divide|${sub_memory}|1024
+```
 
 ### Map lookups
 
+`Un supported (At the moment!)`
+
 ### Conditionals
+
+`Un supported (At the moment!)`
 
 ## Property scope
 
@@ -113,6 +129,11 @@ export JAVA_OPTS="${JAVA_OPTS} -javaagent:/opt/appd/appd.jar"
 * `cpu_count` -
 * `total_memory` -
 
+```
+properties:
+    HOSTNAME: host|hostname
+```
+
 
 ### aws
 
@@ -120,10 +141,22 @@ A set of properties that are resolved from AWS scoped services
 
 #### instance
 
+* `account_id`
+* `ami_id`
+* `ami_launch_index`
+* `availability_zone`
+* `iam_info`
+* `instance_action`
+* `instance_id`
+* `instance_profile_arn`
+* `instance_profile_id`
 * `instance_type`
-* `public_ip`
-* `private_ip`
-* ``
+* `private_hostname`
+* `private_ipv4`
+* `public_hostname`
+* `public_ipv4`
+* `security_groups`
+* `region`
 
 #### tags
 

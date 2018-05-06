@@ -1,11 +1,12 @@
 
 import logging
 import socket
+import boto3
 
 from string import Template
 from botocore.exceptions import ClientError
 from psutil import virtual_memory
-import boto3
+from ec2_metadata import ec2_metadata
 
 
 logger = logging.getLogger("configioc")
@@ -33,6 +34,46 @@ class StringResolver(BaseResolver):
 
     def resolve(self, parts, current_properties):
         return self.resolve_embedded(parts[0], current_properties)
+
+
+class AWSInstanceResolver(BaseResolver):
+
+    def resolve(self, parts, current_properties):
+
+        if parts[0] == "account_id":
+            return ec2_metadata.account_id
+        elif parts[0] == "ami_id":
+            return ec2_metadata.ami_id
+        elif parts[0] == "ami_launch_index":
+            return ec2_metadata.ami_launch_index
+        elif parts[0] == "availability_zone":
+            return ec2_metadata.availability_zone
+        elif parts[0] == "iam_info":
+            return ec2_metadata.iam_info
+        elif parts[0] == "instance_action":
+            return ec2_metadata.instance_action
+        elif parts[0] == "instance_id":
+            return ec2_metadata.instance_id
+        elif parts[0] == "instance_profile_arn":
+            return ec2_metadata.instance_profile_arn
+        elif parts[0] == "instance_profile_id":
+            return ec2_metadata.instance_profile_id
+        elif parts[0] == "instance_type":
+            return ec2_metadata.instance_type
+        elif parts[0] == "private_hostname":
+            return ec2_metadata.private_hostname
+        elif parts[0] == "private_ipv4":
+            return ec2_metadata.private_ipv4
+        elif parts[0] == "public_hostname":
+            return ec2_metadata.public_hostname
+        elif parts[0] == "public_ipv4":
+            return ec2_metadata.public_ipv4
+        elif parts[0] == "security_groups":
+            return ec2_metadata.security_groups
+        elif parts[0] == "region":
+            return ec2_metadata.region
+        else:
+            logger.error("Unable to AWS instance attribute '{}'".format(parts[0]))
 
 
 class AWSTagResolver(BaseResolver):
@@ -78,6 +119,8 @@ class AWSResolver(BaseSubResolver):
             return AWSTagResolver()
         elif resolver_name == "paramstore":
             return AWSParamStoreResolver()
+        elif resolver_name == "instance":
+            return AWSInstanceResolver()
         else:
             logger.error("Unable to locate AWS sub-resolver '{}'".format(resolver_name))
 
