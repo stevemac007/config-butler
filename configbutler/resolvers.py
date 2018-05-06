@@ -9,7 +9,7 @@ from psutil import virtual_memory
 from ec2_metadata import EC2Metadata
 import multiprocessing
 
-logger = logging.getLogger("configioc")
+logger = logging.getLogger("configbutler")
 
 
 class BaseResolver(object):
