@@ -1,5 +1,20 @@
 # Config Butler
 
+
+|travis-badge| |docker-badge| |pypi-badge| |coveralls-badge|
+
+.. |travis-badge| image:: https://img.shields.io/travis/stevemac007/config-butler.svg
+   :target: https://travis-ci.org/stevemac007/config-butler
+   :alt: Travis build badge
+
+.. |pypi-badge| image:: https://img.shields.io/pypi/v/config-butler.svg
+   :target: https://pypi.python.org/pypi/config-butler/
+   :alt: PyPI version badge
+
+.. |coveralls-badge| image:: https://coveralls.io/repos/github/stevemac007/config-butler/badge.svg?branch=master
+   :target: https://coveralls.io/github/stevemac007/config-butler?branch=master
+
+
 This tool is an extensible framework that provides an ability to manage server configuration files composed from properties available in the servers environment.
 
 Modern server solutions are comprimised of many components, which we currently build and manage in a very monolitic way.
