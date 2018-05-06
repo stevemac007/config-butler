@@ -97,6 +97,7 @@ export JAVA_OPTS="${JAVA_OPTS} -javaagent:/opt/appd/appd.jar"
 ## Property functions
 
 ### Math functions
+
 + - / * functions that can be used to t
 
 ### Map lookups
