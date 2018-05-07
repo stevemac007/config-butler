@@ -1,8 +1,12 @@
 Config Butler
 =============
 
-`Build Status <https://travis-ci.org/stevemac007/config-butler>`__
-`Coverage Status <https://coveralls.io/github/stevemac007/config-butler?branch=master>`__
+.. image:: https://travis-ci.org/stevemac007/config-butler.svg?branch=master
+   :target: https://travis-ci.org/stevemac007/config-butler
+
+.. image:: https://coveralls.io/repos/github/stevemac007/config-butler/badge.svg?branch=master
+   :target: https://coveralls.io/github/stevemac007/config-butler?branch=master
+
 
 This tool is an extensible framework that provides an ability to manage
 server configuration files composed from properties available in the
