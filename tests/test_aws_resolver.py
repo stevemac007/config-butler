@@ -3,6 +3,7 @@ from mock import call, Mock, MagicMock
 
 from configbutler.resolvers import AWSResolver
 
+
 class TestAWSResolver(unittest.TestCase):
 
     def test_invalid(self):

@@ -1,5 +1,4 @@
 import unittest
-from mock import call, Mock, MagicMock
 
 from configbutler.resolvers import LocalHostResolver
 

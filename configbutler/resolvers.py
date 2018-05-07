@@ -56,42 +56,47 @@ class AWSInstanceMetadataResolver(BaseResolver):
 
     def __init__(self):
         super(AWSInstanceMetadataResolver, self).__init__()
-        self.metadata = EC2Metadata()
+        self.metadata = None
+
+    def _metadata(self):
+        if self.metadata is None:
+            self.metadata = EC2Metadata()
+        return self.metadata
 
     def resolve(self, parts, current_properties):
 
         if parts[0] == "account_id":
-            return self.metadata.account_id
+            return self._metadata().account_id
         elif parts[0] == "ami_id":
-            return self.metadata.ami_id
+            return self._metadata().ami_id
         elif parts[0] == "ami_launch_index":
-            return self.metadata.ami_launch_index
+            return self._metadata().ami_launch_index
         elif parts[0] == "availability_zone":
-            return self.metadata.availability_zone
+            return self._metadata().availability_zone
         elif parts[0] == "iam_info":
-            return self.metadata.iam_info
+            return self._metadata().iam_info
         elif parts[0] == "instance_action":
-            return self.metadata.instance_action
+            return self._metadata().instance_action
         elif parts[0] == "instance_id":
-            return self.metadata.instance_id
+            return self._metadata().instance_id
         elif parts[0] == "instance_profile_arn":
-            return self.metadata.instance_profile_arn
+            return self._metadata().instance_profile_arn
         elif parts[0] == "instance_profile_id":
-            return self.metadata.instance_profile_id
+            return self._metadata().instance_profile_id
         elif parts[0] == "instance_type":
-            return self.metadata.instance_type
+            return self._metadata().instance_type
         elif parts[0] == "private_hostname":
-            return self.metadata.private_hostname
+            return self._metadata().private_hostname
         elif parts[0] == "private_ipv4":
-            return self.metadata.private_ipv4
+            return self._metadata().private_ipv4
         elif parts[0] == "public_hostname":
-            return self.metadata.public_hostname
+            return self._metadata().public_hostname
         elif parts[0] == "public_ipv4":
-            return self.metadata.public_ipv4
+            return self._metadata().public_ipv4
         elif parts[0] == "security_groups":
-            return self.metadata.security_groups
+            return self._metadata().security_groups
         elif parts[0] == "region":
-            return self.metadata.region
+            return self._metadata().region
         else:
             logger.error("Unable to resolve AWS instance attribute '{}'".format(parts[0]))
 
@@ -106,7 +111,12 @@ class AWSParamStoreResolver(BaseResolver):
 
     def __init__(self):
         super(AWSParamStoreResolver, self).__init__()
-        self.client = boto3.client('ssm')
+        self.client = None
+
+    def _ssm_client(self):
+        if self.client is None:
+            self.client = boto3.client('ssm')
+        return self.client
 
     def resolve(self, key, current_properties):
 
@@ -114,7 +124,7 @@ class AWSParamStoreResolver(BaseResolver):
 
         logger.info("Resolving SSM parameter '{}'".format(param_key))
         try:
-            param = self.client.get_parameter(Name=param_key, WithDecryption=True)
+            param = self._ssm_client().get_parameter(Name=param_key, WithDecryption=True)
             logger.debug(param)
             return param["Parameter"]["Value"]
         except ClientError as ex:
