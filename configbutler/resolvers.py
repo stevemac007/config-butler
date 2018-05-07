@@ -12,11 +12,27 @@ import multiprocessing
 logger = logging.getLogger("configbutler")
 
 
+class UnsafeSubstitution(Exception):
+
+    def __init__(self, cause):
+        super(UnsafeSubstitution, self).__init__(cause)
+
+
 class BaseResolver(object):
+
+    def __init__(self):
+        self.safe_mode = False
 
     def resolve_embedded(self, string, current_properties):
         template = Template(string)
-        return template.substitute(current_properties)
+        try:
+            if self.safe_mode:
+                value = template.safe_substitute(current_properties)
+            else:
+                value = template.substitute(current_properties)
+        except KeyError as ex:
+            raise UnsafeSubstitution(ex)
+        return value
 
 
 class BaseSubResolver(object):

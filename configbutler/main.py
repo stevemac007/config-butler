@@ -1,8 +1,9 @@
 import sys
+import os
 import yaml
 import argparse
 import logging
-from .resolvers import StringResolver, AWSResolver, LocalHostResolver, MathResolver
+from .resolvers import StringResolver, AWSResolver, LocalHostResolver, MathResolver, UnsafeSubstitution
 
 from . import _version
 from string import Template
@@ -22,7 +23,7 @@ def lookup_resolver(resolver_name):
     elif resolver_name == "math":
         return MathResolver()
     else:
-        logger.error("Unable to locate resolver '{}'".format(resolver_name))
+        return None
 
 
 def parse_args(args):
@@ -42,7 +43,7 @@ def parse_args(args):
                         type=argparse.FileType('w'), default=sys.stdout,
                         help="redirect output to a file")
 
-    parser.add_argument('folder')
+    parser.add_argument('entrypoint')
     parser.add_argument('--version', action='version',
                         version='%(prog)s {version}'.format(version=_version.__version__))
 
@@ -66,20 +67,67 @@ def cli(cli_args):
 
 
 def process(args):
-    config = yaml.load(open(args.folder, 'r'))
+    if os.path.isdir(args.entrypoint):
+        for file_name in os.listdir(args.entrypoint):
+            process_file(args, args.entrypoint+"/"+file_name)
+    else:
+        process_file(args, args.entrypoint)
+
+
+def process_file(args, filename):
+
+    print("Processing configuration {}".format(filename))
+
+    config = yaml.load(open(filename, 'r'))
+
+    resolved_properties = resolve_properties(args, config)
+    render_files(args, config, resolved_properties)
+
+
+def resolve_properties(args, config):
 
     resolved_properties = dict()
+    deferred_properties = config['properties'].keys()
+    last_size = 0
+    safe_mode = False
 
-    for key in config['properties']:
-        value = config['properties'][key]
-        logger.info(key + " - " + value)
+    logger.debug(config['properties'])
 
-        parts = value.split("|")
+    # We need to try (until we can't) to expand the available variables
+    while len(deferred_properties) > 0:
 
-        resolver = lookup_resolver(parts[0])
-        if resolver is not None:
-            resolved_value = resolver.resolve(parts[1:], current_properties=resolved_properties)
-            resolved_properties[key] = resolved_value
+        # Once we have resolved no more properties, we need to do the final pass in safe mode
+        if last_size == len(deferred_properties):
+            logger.error(deferred_properties)
+            safe_mode = True
+
+        last_size = len(deferred_properties)
+
+        for key in deferred_properties:
+            value = config['properties'][key]
+            logger.info("Processing property - " + key + " = " + value)
+
+            parts = value.split("|")
+            logger.debug("Lookup resolver '{}'".format(parts[0]))
+            resolver = lookup_resolver(parts[0])
+
+            try:
+                if resolver is not None:
+                    logger.debug("Resolver found '{}'".format(resolver))
+                    resolver.safe_mode = safe_mode
+                    resolved_value = resolver.resolve(parts[1:], current_properties=resolved_properties)
+                    resolved_properties[key] = resolved_value
+                else:
+                    logger.error("Unable to locate resolver for '{}'".format(parts[0]))
+                    resolved_properties[key] = value
+
+                deferred_properties.remove(key)
+            except UnsafeSubstitution as ex:
+                logger.info("Resolved properties")
+                logger.info(resolved_properties)
+                logger.info("Deferring render of {}/{} due to {}".format(key, value, ex))
+
+            logger.debug("Progressively resolved properties {}".format(resolved_properties))
 
     if args.show_properties:
         print("---------------------")
@@ -87,6 +135,10 @@ def process(args):
         print("---------------------")
         print(yaml.dump(resolved_properties, default_flow_style=False))
 
+    return resolved_properties
+
+
+def render_files(args, config, resolved_properties):
     env = Environment(
         loader=FileSystemLoader('example'),
         autoescape=select_autoescape(['html', 'xml'])
@@ -96,7 +148,7 @@ def process(args):
         logger.debug(file)
 
         template = Template(file["src"])
-        resolved_filename = template.substitute(resolved_properties)
+        resolved_filename = template.safe_substitute(resolved_properties)
 
         template = env.get_template(resolved_filename)
 
