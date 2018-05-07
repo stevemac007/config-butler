@@ -69,7 +69,7 @@ def cli(cli_args):
 def process(args):
     if os.path.isdir(args.entrypoint):
         for file_name in os.listdir(args.entrypoint):
-            process_file(args, args.entrypoint+"/"+file_name)
+            process_file(args, args.entrypoint + "/" + file_name)
     else:
         process_file(args, args.entrypoint)
 
