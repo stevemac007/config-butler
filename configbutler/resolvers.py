@@ -140,13 +140,19 @@ class LocalHostResolver(BaseResolver):
 
 class AWSResolver(BaseSubResolver):
 
+    def __init__(self):
+        super(AWSResolver, self).__init__()
+        self.tags_resolver = AWSTagResolver()
+        self.paramstore_resolver = AWSParamStoreResolver()
+        self.metadata_resolver = AWSInstanceMetadataResolver()
+
     def lookup_sub_resolver(self, resolver_name):
         if resolver_name == "tags":
-            return AWSTagResolver()
+            return self.tags_resolver
         elif resolver_name == "paramstore":
-            return AWSParamStoreResolver()
+            return self.paramstore_resolver
         elif resolver_name == "metadata":
-            return AWSInstanceMetadataResolver()
+            return self.metadata_resolver
         else:
             logger.error("Unable to locate AWS sub-resolver '{}'".format(resolver_name))
 
