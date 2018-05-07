@@ -23,8 +23,9 @@ The output of the configuration files are templated using jinja, with a map of p
 The properties are resolved through a number of extensible sources such as:
 
 * local host information
-* AWS instance tag values
-*
+* AWS instance tags
+* AWS instance metadata
+* AWS SSM parameter store
 
 
 ### `003-example.config`
@@ -51,21 +52,17 @@ properties:
 files:
     -
       mode: jinja2
-      src: file:///tmp/appdynamics.conf.j2
+      src: /tmp/appdynamics.conf.j2
       dest: /opt/appd/config/appdynamics.conf
 
     - mode: jinja2
-      src: file:///tmp/setenv.sh.j2
+      src: /tmp/setenv.sh.j2
       dest: /usr/local/tomcat7/conf/setenv.sh
-
-    - mode: jinja2
-      src: s3://example-bucket/${ENVIRONMENT}/application.conf.j2
-      dest: /etc/application/application.conf
 ```
 
 And config templates
 
-### `/usr/local/tomcat7/conf/setenv.sh`
+### `/tmp/setenv.sh.j2`
 
 ```
 export JAVA_OPTS="-Xmx {{ jvm_memory }}"
@@ -76,7 +73,7 @@ export JAVA_OPTS="${JAVA_OPTS} -javaagent:/opt/appd/appd.jar"
 ```
 
 
-### `/opt/appd/config/appdynamics.conf`
+### `/tmp/appdynamics.conf.j2`
 
 ```
 <controller-info>
@@ -103,10 +100,12 @@ export JAVA_OPTS="${JAVA_OPTS} -javaagent:/opt/appd/appd.jar"
 
 Functions that can be used to to manipulate figures to perform basic calculations
 
-* `add` - adds two parameters together (eg. math|add|1|${CLUSTER_SIZE})
-* `subtract` - subtracts the second from the first parameter (eg. math|subtract|15|${CLUSTER_SIZE}
-* `multiply` - multiplys the parameters together (eg. math|multiply|${TOTAL_MEMORY}|0.8
-* `divide` - divides the first by the second parameter (eg. math|divide|${TOTAL_MEMORY}|1024
+* `add` - adds two parameters together (eg. `math|add|1|${CLUSTER_SIZE}`)
+* `subtract` - subtracts the second from the first parameter (eg. `math|subtract|15|${CLUSTER_SIZE}`)
+* `multiply` - multiplys the parameters together (eg. `math|multiply|${TOTAL_MEMORY}|0.8`)
+* `divide` - divides the first by the second parameter (eg. `math|divide|${TOTAL_MEMORY}|1024`)
+
+*Example usage*
 
 ```
 properties:
@@ -127,10 +126,12 @@ properties:
 
 ### host
 
-* `hostname` -
-* `ipaddress` -
-* `cpu_count` -
-* `total_memory` -
+* `hostname` - the local hostname (eg `host|hostname`)
+* `ipaddress` - the ipaddress of eth0 (eg `host|ipaddress`)
+* `cpu_count` - the number of available CPU cores (eg `host|cpu_count`)
+* `total_memory` - the total memory available (eg `host|total_memory`)
+
+*Example usage*
 
 ```
 properties:
@@ -161,6 +162,16 @@ A set of properties that are resolved from AWS scoped services
 * `security_groups`
 * `region`
 
+*Example usage*
+
+```
+properties:
+    aws_account_id: aws|metadata|account_id
+    aws_region: aws|metadata|region
+    instance_type: aws|metadata|instance_type
+    internal_ip: aws|metadata|private_ipv4
+```
+
 #### tags
 
 Tag values are lookups to the current host's tags,
@@ -171,6 +182,23 @@ eg. Cloudformation tags
 * `aws:cloudformation:stack-id`
 * `aws:cloudformation:stack-name`
 
+```
+properties:
+    stack_name: aws|tags|aws:cloudformation:stack-name
+    monitoring_tags: aws|tags|monitoring
+```
+
+
 #### paramstore
 
 Values looked up from parameter store, where the key may be composed by other resolved variables.
+
+```
+properties:
+    ENVIRONMENT: string|test
+    application: string|garden
+
+    splunk_password: aws|paramstore|/Splunk/SplunkPassword
+    controller_licence: aws|paramstore|/${application}/${ENVIRONMENT}/AppD/account-access-key
+    controller_host: aws|paramstore|/${application}/${ENVIRONMENT}/AppD/controller
+```
