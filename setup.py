@@ -14,7 +14,7 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 version = {}
@@ -29,7 +29,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version=version['__version__'],
 
-    description='Generate server configuration files',
+    description='Service to manage generation of server config from various configuration sources',
     long_description=long_description,
 
     # The project's main homepage.
