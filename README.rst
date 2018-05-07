@@ -3,9 +3,15 @@ Config Butler
 
 .. image:: https://travis-ci.org/stevemac007/config-butler.svg?branch=master
    :target: https://travis-ci.org/stevemac007/config-butler
+   :alt: Travis build badge
 
 .. image:: https://coveralls.io/repos/github/stevemac007/config-butler/badge.svg?branch=master
    :target: https://coveralls.io/github/stevemac007/config-butler?branch=master
+   :alt: Coveralls build badge
+
+.. image:: https://img.shields.io/pypi/v/configbutler.svg
+   :target: https://pypi.python.org/pypi/configbutler/
+   :alt: PyPI version badge
 
 
 This tool is an extensible framework that provides an ability to manage
