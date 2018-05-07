@@ -87,7 +87,7 @@ def process_file(args, filename):
 def resolve_properties(args, config):
 
     resolved_properties = dict()
-    deferred_properties = config['properties'].keys()
+    deferred_properties = list(config['properties'].keys())
     last_size = 0
     safe_mode = False
 
