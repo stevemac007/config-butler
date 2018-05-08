@@ -103,8 +103,44 @@ class AWSInstanceMetadataResolver(BaseResolver):
 
 class AWSTagResolver(BaseResolver):
 
+    def __init__(self):
+        super(AWSTagResolver, self).__init__()
+        self.client = None
+        self.tags = None
+        self.metadata = None
+
+    def _metadata(self):
+        if self.metadata is None:
+            self.metadata = EC2Metadata()
+        return self.metadata
+
+    def _ec2_client(self):
+        if self.client is None:
+            self.client = boto3.client('ec2')
+        return self.client
+
     def resolve(self, key, current_properties):
-        return "tag:" + self.resolve_embedded(key, current_properties)
+
+        if self.tags is None:
+            response = self._ec2_client().describe_tags(
+                Filters=[
+                    {
+                        'Name': 'resource-id',
+                        'Values': [self._metadata().instance_id]
+                    },
+                ]
+            )
+            self.tags = response["Tags"]
+
+        return self.lookup_tag(key=self.resolve_embedded(key, current_properties), tags=self.tags)
+
+    @staticmethod
+    def lookup_tag(key, tags):
+        for tag in tags:
+            if tag["Key"] == key:
+                return tag["Value"]
+
+        return None
 
 
 class AWSParamStoreResolver(BaseResolver):
