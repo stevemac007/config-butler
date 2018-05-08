@@ -4,6 +4,7 @@ import yaml
 import argparse
 import logging
 from .resolvers import StringResolver, AWSResolver, LocalHostResolver, MathResolver, UnsafeSubstitution
+# from .service import install_service
 
 from . import _version
 from string import Template
@@ -59,6 +60,9 @@ def cli(cli_args):
     logger.setLevel(max(3 - args.verbose_count, 0) * 10)
 
     try:
+        # if args.install_service:
+        #     install_service()
+        # else:
         process(args)
     except KeyboardInterrupt:
         logger.error('Program interrupted!')
@@ -67,9 +71,12 @@ def cli(cli_args):
 
 
 def process(args):
+
     if os.path.isdir(args.entrypoint):
         for file_name in os.listdir(args.entrypoint):
-            process_file(args, args.entrypoint + "/" + file_name)
+            child = os.path.join(args.entrypoint, file_name)
+            if os.path.isfile(child):
+                process_file(args, child)
     else:
         process_file(args, args.entrypoint)
 
@@ -144,24 +151,25 @@ def render_files(args, config, resolved_properties):
         autoescape=select_autoescape(['html', 'xml'])
     )
 
-    for file in config['files']:
-        logger.debug(file)
+    if not config.get('files') is None:
+        for file in config['files']:
+            logger.debug(file)
 
-        template = Template(file["src"])
-        resolved_filename = template.safe_substitute(resolved_properties)
+            template = Template(file["src"])
+            resolved_filename = template.safe_substitute(resolved_properties)
 
-        template = env.get_template(resolved_filename)
+            template = env.get_template(resolved_filename)
 
-        contents = template.render(resolved_properties)
-        if args.dry_run:
-            print("DRYRUN: Rendering content for '{}'".format(file['dest']))
-            print("----------------------")
-            print(contents)
-            print("----------------------")
-            print("")
-        else:
-            with open(file['dest'], 'w') as out:
-                out.write(contents)
+            contents = template.render(resolved_properties)
+            if args.dry_run:
+                print("DRYRUN: Rendering content for '{}'".format(file['dest']))
+                print("----------------------")
+                print(contents)
+                print("----------------------")
+                print("")
+            else:
+                with open(file['dest'], 'w') as out:
+                    out.write(contents)
 
 
 def main():
