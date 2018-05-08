@@ -65,40 +65,40 @@ class AWSInstanceMetadataResolver(BaseResolver):
 
     def resolve(self, parts, current_properties):
 
-        if parts[0] == "account_id":
+        if parts == "account_id":
             return self._metadata().account_id
-        elif parts[0] == "ami_id":
+        elif parts == "ami_id":
             return self._metadata().ami_id
-        elif parts[0] == "ami_launch_index":
+        elif parts == "ami_launch_index":
             return self._metadata().ami_launch_index
-        elif parts[0] == "availability_zone":
+        elif parts == "availability_zone":
             return self._metadata().availability_zone
-        elif parts[0] == "iam_info":
+        elif parts == "iam_info":
             return self._metadata().iam_info
-        elif parts[0] == "instance_action":
+        elif parts == "instance_action":
             return self._metadata().instance_action
-        elif parts[0] == "instance_id":
+        elif parts == "instance_id":
             return self._metadata().instance_id
-        elif parts[0] == "instance_profile_arn":
+        elif parts == "instance_profile_arn":
             return self._metadata().instance_profile_arn
-        elif parts[0] == "instance_profile_id":
+        elif parts == "instance_profile_id":
             return self._metadata().instance_profile_id
-        elif parts[0] == "instance_type":
+        elif parts == "instance_type":
             return self._metadata().instance_type
-        elif parts[0] == "private_hostname":
+        elif parts == "private_hostname":
             return self._metadata().private_hostname
-        elif parts[0] == "private_ipv4":
+        elif parts == "private_ipv4":
             return self._metadata().private_ipv4
-        elif parts[0] == "public_hostname":
+        elif parts == "public_hostname":
             return self._metadata().public_hostname
-        elif parts[0] == "public_ipv4":
+        elif parts == "public_ipv4":
             return self._metadata().public_ipv4
-        elif parts[0] == "security_groups":
+        elif parts == "security_groups":
             return self._metadata().security_groups
-        elif parts[0] == "region":
+        elif parts == "region":
             return self._metadata().region
         else:
-            logger.error("Unable to resolve AWS instance attribute '{}'".format(parts[0]))
+            logger.error("Unable to resolve AWS instance attribute '{}'".format(parts))
 
 
 class AWSTagResolver(BaseResolver):
