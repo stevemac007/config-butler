@@ -147,12 +147,13 @@ def resolve_properties(args, config):
 
 def render_files(args, config, resolved_properties):
     env = Environment(
-        loader=FileSystemLoader('example'),
+        loader=FileSystemLoader('/'),
         autoescape=select_autoescape(['html', 'xml'])
     )
 
     if not config.get('files') is None:
         for file in config['files']:
+            logger.info("Processing '{}'".format(file["src"]))
             logger.debug(file)
 
             template = Template(file["src"])
