@@ -33,9 +33,9 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/stevemac007/configbutler',
+    url='https://github.com/stevemac007/config-butler',
 
-    download_url='https://github.com/stevemac007/configbutler/archive/%s.tar.gz' % version['__version__'],
+    download_url='https://github.com/stevemac007/config-butler/archive/%s.tar.gz' % version['__version__'],
 
     # Author details
     author='Steve Mactaggart',
