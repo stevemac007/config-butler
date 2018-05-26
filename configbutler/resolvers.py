@@ -176,6 +176,8 @@ class LocalHostResolver(BaseResolver):
     def resolve(self, key, current_properties):
         if key[0] == "hostname":
             return socket.gethostname()
+        elif key[0] == "fqdn":
+            return socket.getfqdn()
         elif key[0] == "total_memory":
             return self.mem.total
         elif key[0] == "cpu_count":

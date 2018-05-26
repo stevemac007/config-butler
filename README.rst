@@ -164,6 +164,7 @@ host
 ~~~~
 
 -  ``hostname`` - the local hostname (eg ``host|hostname``)
+-  ``fqdn`` - the local fully qualified domain name (eg ``host|fqdn``)
 -  ``ipaddress`` - the ipaddress of eth0 (eg ``host|ipaddress``)
 -  ``cpu_count`` - the number of available CPU cores (eg
    ``host|cpu_count``)
