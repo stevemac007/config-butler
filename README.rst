@@ -224,6 +224,8 @@ eg. Cloudformation tags
 -  ``aws:cloudformation:stack-id``
 -  ``aws:cloudformation:stack-name``
 
+*Example usage*
+
 ::
 
    properties:
@@ -232,7 +234,7 @@ eg. Cloudformation tags
 
 
 In some locations it has been identified that Tags were not resolvable when the servers were initially launched.
-If no tags are returned for the current host (but asked for in configuration) `configbutler` assumes they have not been set yet and will wait and retry the tag lookup.
+If no tags are returned for the current host (but asked for in configuration) ``configbutler`` assumes they have not been set yet and will wait and retry the tag lookup.
 
 This lookup will occur 5 times, each one doubling the time waited between requests.
 
@@ -245,13 +247,14 @@ This lookup will occur 5 times, each one doubling the time waited between reques
    ERROR:configbutler:No AWS::tag values found, waiting 16sec to retry.
    ERROR:configbutler:No AWS::tag values found, continuing with no tags.
 
-If eventually no tags are found after 5 attempts, `configbutler` will give up and return `None` for any additional tag lookup.
+If eventually no tags are found after 5 attempts, ``configbutler`` will give up and return ``None`` for any additional tag lookup.
 
 paramstore
 ^^^^^^^^^^
 
-Values looked up from parameter store, where the key may be composed by
-other resolved variables.
+Values looked up from parameter store, where the key may be composed by other resolved variables.
+
+*Example usage*
 
 ::
 
