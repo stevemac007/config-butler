@@ -145,8 +145,8 @@ class AWSTagResolver(BaseResolver):
                     backoff_time = backoff_time * 2
                     count += 1
 
-        if len(self.tags) == 0:
-            logger.error("No AWS::tag values found, continuing with no tags.")
+            if len(self.tags) == 0:
+                logger.error("No AWS::tag values found, continuing with no tags.")
 
         return self.lookup_tag(key=self.resolve_embedded(key, current_properties), tags=self.tags)
 

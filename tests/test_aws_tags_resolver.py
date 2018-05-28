@@ -15,7 +15,7 @@ logging.basicConfig()
 class TestAWSTagsResolver(unittest.TestCase):
 
     @mock.patch("configbutler.resolvers.logger")
-    def test_no_tags_retries(self, mock_logger):
+    def test_no_tags_retries(self, mock_logger=None):
         undertest = AWSTagResolver()
         undertest.RETRY_COUNT = 2
         undertest.metadata = mock.create_autospec(EC2Metadata)
@@ -38,6 +38,36 @@ class TestAWSTagsResolver(unittest.TestCase):
                           call.error('No AWS::tag values found, waiting 2sec to retry.'),
                           call.error('No AWS::tag values found, continuing with no tags.'),
                           call.error("Unable to find AWS::tag named 'blart'")],
+                         mock_logger.mock_calls)
+
+    @mock.patch("configbutler.resolvers.logger")
+    def test_no_tags_multiple_tags_cache_results(self, mock_logger=None):
+        undertest = AWSTagResolver()
+        undertest.RETRY_COUNT = 2
+        undertest.metadata = mock.create_autospec(EC2Metadata)
+        undertest.metadata.instance_id = "i-12345"
+
+        mock_tags = {
+            "Tags": []
+        }
+
+        undertest.client = Mock()
+        undertest.client.describe_tags = MagicMock(return_value=mock_tags)
+
+        self.assertEqual(None, undertest.resolve("blart", dict))
+        self.assertEqual(None, undertest.resolve("blerg", dict))
+        self.assertEqual(None, undertest.resolve("bling", dict))
+
+        self.assertEqual([call(Filters=[{'Values': ['i-12345'], 'Name': 'resource-id'}]),
+                          call(Filters=[{'Values': ['i-12345'], 'Name': 'resource-id'}])],
+                         undertest.client.describe_tags.mock_calls)
+
+        self.assertEqual([call.error('No AWS::tag values found, waiting 1sec to retry.'),
+                          call.error('No AWS::tag values found, waiting 2sec to retry.'),
+                          call.error('No AWS::tag values found, continuing with no tags.'),
+                          call.error("Unable to find AWS::tag named 'blart'"),
+                          call.error("Unable to find AWS::tag named 'blerg'"),
+                          call.error("Unable to find AWS::tag named 'bling'")],
                          mock_logger.mock_calls)
 
     @mock.patch("configbutler.resolvers.logger")

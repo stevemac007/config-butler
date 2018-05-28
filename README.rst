@@ -216,7 +216,7 @@ metadata
 tags
 ^^^^
 
-Tag values are lookups to the current host’s tags,
+Tag values are lookups to the current host’s tags.
 
 eg. Cloudformation tags
 
@@ -229,6 +229,23 @@ eg. Cloudformation tags
    properties:
        stack_name: aws|tags|aws:cloudformation:stack-name
        monitoring_tags: aws|tags|monitoring
+
+
+In some locations it has been identified that Tags were not resolvable when the servers were initially launched.
+If no tags are returned for the current host (but asked for in configuration) `configbutler` assumes they have not been set yet and will wait and retry the tag lookup.
+
+This lookup will occur 5 times, each one doubling the time waited between requests.
+
+::
+
+   ERROR:configbutler:No AWS::tag values found, waiting 1sec to retry.
+   ERROR:configbutler:No AWS::tag values found, waiting 2sec to retry.
+   ERROR:configbutler:No AWS::tag values found, waiting 4sec to retry.
+   ERROR:configbutler:No AWS::tag values found, waiting 8sec to retry.
+   ERROR:configbutler:No AWS::tag values found, waiting 16sec to retry.
+   ERROR:configbutler:No AWS::tag values found, continuing with no tags.
+
+If eventually no tags are found after 5 attempts, `configbutler` will give up and return `None` for any additional tag lookup.
 
 paramstore
 ^^^^^^^^^^
