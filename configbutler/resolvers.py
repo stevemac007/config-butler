@@ -2,6 +2,7 @@
 import logging
 import socket
 import boto3
+import time
 
 from string import Template
 from botocore.exceptions import ClientError
@@ -103,6 +104,8 @@ class AWSInstanceMetadataResolver(BaseResolver):
 
 class AWSTagResolver(BaseResolver):
 
+    RETRY_COUNT = 5
+
     def __init__(self):
         super(AWSTagResolver, self).__init__()
         self.client = None
@@ -122,15 +125,28 @@ class AWSTagResolver(BaseResolver):
     def resolve(self, key, current_properties):
 
         if self.tags is None:
-            response = self._ec2_client().describe_tags(
-                Filters=[
-                    {
-                        'Name': 'resource-id',
-                        'Values': [self._metadata().instance_id]
-                    },
-                ]
-            )
-            self.tags = response["Tags"]
+            self.tags = []
+            backoff_time = 1
+            count = 0
+
+            while len(self.tags) == 0 and count < self.RETRY_COUNT:
+                response = self._ec2_client().describe_tags(
+                    Filters=[
+                        {
+                            'Name': 'resource-id',
+                            'Values': [self._metadata().instance_id]
+                        },
+                    ]
+                )
+                self.tags = response["Tags"]
+                if len(self.tags) == 0:
+                    logger.error("No AWS::tag values found, waiting {}sec to retry.".format(backoff_time))
+                    time.sleep(backoff_time)
+                    backoff_time = backoff_time * 2
+                    count += 1
+
+        if len(self.tags) == 0:
+            logger.error("No AWS::tag values found, continuing with no tags.")
 
         return self.lookup_tag(key=self.resolve_embedded(key, current_properties), tags=self.tags)
 
@@ -140,6 +156,7 @@ class AWSTagResolver(BaseResolver):
             if tag["Key"] == key:
                 return tag["Value"]
 
+        logger.error("Unable to find AWS::tag named '{}'".format(key))
         return None
 
 
