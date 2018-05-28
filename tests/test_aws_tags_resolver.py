@@ -1,6 +1,5 @@
 import unittest
 
-import StringIO
 from ec2_metadata import EC2Metadata
 from mock import call, Mock, MagicMock
 import mock
