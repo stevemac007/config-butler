@@ -17,7 +17,7 @@ properties:
     aa: string|${a}${a}
     ab: string|${a}b
 """
-        properties = resolve_properties(args, yaml.load(undertest))
+        properties = resolve_properties(args, yaml.safe_load(undertest))
 
         self.assertEqual(properties["a"], "a")
         self.assertEqual(properties["aa"], "aa")
@@ -33,7 +33,7 @@ properties:
     aa: string|${a}${a}
     ab: string|${a}${b}
 """
-        properties = resolve_properties(args, yaml.load(undertest))
+        properties = resolve_properties(args, yaml.safe_load(undertest))
 
         self.assertEqual(properties["a"], "a")
         self.assertEqual(properties["aa"], "aa")
@@ -48,7 +48,7 @@ properties:
     the: string|the ${end}
     end: string|end
 """
-        properties = resolve_properties(args, yaml.load(undertest))
+        properties = resolve_properties(args, yaml.safe_load(undertest))
 
         self.assertEqual(properties["the"], "the end")
         self.assertEqual(properties["end"], "end")

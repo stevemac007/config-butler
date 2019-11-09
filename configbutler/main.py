@@ -53,8 +53,8 @@ def parse_args(args):
 
 class ExpectedException(Exception):
 
-    def __init__(self, *args: object, **kwargs: object) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(ExpectedException, self).__init__(*args, **kwargs)
 
 
 def cli(cli_args):
