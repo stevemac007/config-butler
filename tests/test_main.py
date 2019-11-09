@@ -42,4 +42,3 @@ class TestArgsParser(unittest.TestCase):
         self.assertEqual("/tmp", config.entrypoint)
         self.assertEqual(False, config.show_properties)
         self.assertEqual(False, config.install_service)
-
