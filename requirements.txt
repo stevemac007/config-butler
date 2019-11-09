@@ -2,5 +2,5 @@ boto3==1.7.13
 Jinja2==2.10
 jmespath==0.9.3
 psutil==5.4.5
-PyYAML==3.12
+PyYAML==5.1
 mock==2.0.0
