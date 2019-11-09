@@ -51,6 +51,12 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
+class ExpectedException(Exception):
+
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        super().__init__(*args, **kwargs)
+
+
 def cli(cli_args):
 
     logging.basicConfig(format='%(name)s (%(levelname)s): %(message)s')
@@ -64,6 +70,8 @@ def cli(cli_args):
         #     install_service()
         # else:
         process(args)
+    except ExpectedException as ex:
+        print(ex)
     except KeyboardInterrupt:
         logger.error('Program interrupted!')
     finally:
@@ -72,13 +80,16 @@ def cli(cli_args):
 
 def process(args):
 
-    if os.path.isdir(args.entrypoint):
-        for file_name in os.listdir(args.entrypoint):
-            child = os.path.join(args.entrypoint, file_name)
-            if os.path.isfile(child):
-                process_file(args, child)
+    if os.path.exists(args.entrypoint):
+        if os.path.isdir(args.entrypoint):
+            for file_name in os.listdir(args.entrypoint):
+                child = os.path.join(args.entrypoint, file_name)
+                if os.path.isfile(child):
+                    process_file(args, child)
+        else:
+            process_file(args, args.entrypoint)
     else:
-        process_file(args, args.entrypoint)
+        raise ExpectedException("Path not found '{}'".format(args.entrypoint))
 
 
 def process_file(args, filename):
@@ -98,6 +109,7 @@ def resolve_properties(args, config):
     last_size = 0
     safe_mode = False
 
+    logger.debug("Properties :")
     logger.debug(config['properties'])
 
     # We need to try (until we can't) to expand the available variables

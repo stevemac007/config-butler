@@ -25,6 +25,11 @@ class TestResolverLookup(unittest.TestCase):
         result = configbutler.main.lookup_resolver("math")
         self.assertEqual("<class 'configbutler.resolvers.MathResolver'>", str(type(result)))
 
+    def test_host_lookup(self):
+
+        result = configbutler.main.lookup_resolver("host")
+        self.assertEqual("<class 'configbutler.resolvers.LocalHostResolver'>", str(type(result)))
+
 
 class TestArgsParser(unittest.TestCase):
 
@@ -42,3 +47,15 @@ class TestArgsParser(unittest.TestCase):
         self.assertEqual("/tmp", config.entrypoint)
         self.assertEqual(False, config.show_properties)
         self.assertEqual(False, config.install_service)
+
+
+class TestProcess(unittest.TestCase):
+
+    def test_default(self):
+        cli_args = ["blart"]
+        args = configbutler.main.parse_args(cli_args)
+
+        with self.assertRaises(configbutler.main.ExpectedException) as ex:
+            configbutler.main.process(args)
+
+        self.assertEqual("Path not found 'blart'", str(ex.exception))
