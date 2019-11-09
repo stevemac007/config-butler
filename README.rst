@@ -18,9 +18,9 @@ This tool is an extensible framework that provides an ability to manage
 server configuration files composed from properties available in the
 servers environment.
 
-Modern server solutions are comprimised of many components, which we
-currently build and manage in a very monolitic way. This tool aims to
-inverse the coupling of service configuration in a kind of dependancy
+Modern server solutions are compromised of many components, which we
+currently build and manage in a very monolithic way. This tool aims to
+inverse the coupling of service configuration in a kind of dependency
 injection workflow.
 
 Configuration

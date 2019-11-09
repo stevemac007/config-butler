@@ -96,7 +96,7 @@ def process_file(args, filename):
 
     print("Processing configuration {}".format(filename))
 
-    config = yaml.load(open(filename, 'r'))
+    config = yaml.load(open(filename, 'r'), Loader=yaml.SafeLoader)
 
     resolved_properties = resolve_properties(args, config)
     render_files(args, config, resolved_properties)
