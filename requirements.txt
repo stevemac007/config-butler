@@ -6,3 +6,4 @@ PyYAML==5.1.2
 mock==3.0.5
 nose
 ec2_metadata==2.0.0
+urllib3>=1.26.5 # not directly required, pinned by Snyk to avoid a vulnerability
